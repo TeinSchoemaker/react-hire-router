@@ -22,6 +22,12 @@ function App() {
     setHiredPeople((prev) => [...prev, { ...person, wage }]);
   }
 
+  function updateHiredPerson(id, updates) {
+    setHiredPeople((prev) =>
+      prev.map((p) => (p.login.uuid === id ? { ...p, ...updates } : p))
+    );
+  }
+
   return (
     <div className="container">
       <h1>Hire Your Team</h1>
@@ -37,6 +43,17 @@ function App() {
               path="/view/:id"
               element={
                 <PersonProfile people={people} hirePeople={hirePeople} />
+              }
+            />
+            <Route
+              path="/edit/:id"
+              element={
+                <PersonProfile
+                  mode="edit"
+                  people={people}
+                  hiredPeople={hiredPeople}
+                  updateHiredPerson={updateHiredPerson}
+                />
               }
             />
           </Routes>

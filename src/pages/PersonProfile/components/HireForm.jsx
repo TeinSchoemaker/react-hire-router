@@ -1,20 +1,36 @@
 /* eslint-disable react/prop-types */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-function HireForm({ person, hirePeople }) {
+function HireForm({ mode = "hire", person, hirePeople, updateHiredPerson }) {
   const [wage, setWage] = useState("");
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (mode === "edit") {
+      setWage(person?.wage != null ? String(person.wage) : "");
+    }
+  }, [mode, person]);
+
   function handleSubmit(event) {
     event.preventDefault();
-    hirePeople(person, wage);
+    const wageNumber = wage === "" ? "" : Number(wage);
+    if (mode === "edit") {
+      const id = person?.login?.uuid;
+      if (id && updateHiredPerson) {
+        updateHiredPerson(id, { wage: wageNumber });
+      }
+    } else {
+      if (hirePeople) {
+        hirePeople(person, wageNumber);
+      }
+    }
     navigate("/");
   }
 
   return (
     <form onSubmit={handleSubmit}>
-      <label htmlFor="wage">Wage Offer</label>
+      <label htmlFor="wage">Wage {mode === "edit" ? "(Edit)" : "Offer"}</label>
       <input
         type="number"
         id="wage"
@@ -24,7 +40,7 @@ function HireForm({ person, hirePeople }) {
         step="0.01"
         min="0"
       />
-      <button type="submit">Hire</button>
+      <button type="submit">{mode === "edit" ? "Save" : "Hire"}</button>
     </form>
   );
 }

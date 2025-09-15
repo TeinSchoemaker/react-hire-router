@@ -10,7 +10,7 @@ function Dashboard({ people, hiredPeople }) {
       </section>
       <section>
         <h2>Hired People</h2>
-        <PeopleList people={hiredPeople} />
+        <PeopleList people={hiredPeople} showEdit />
       </section>
     </main>
   );

@@ -1,16 +1,20 @@
 /* eslint-disable react/prop-types */
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import HireForm from "./components/HireForm";
 
-function PersonProfile({ people, hirePeople }) {
+function PersonProfile({ mode = "view", people, hiredPeople = [], hirePeople, updateHiredPerson }) {
+  const { id } = useParams();
   const [person, setPerson] = useState(null);
-  const personId = useParams();
+
+  const isEdit = mode === "edit";
+
+  const sourceList = useMemo(() => (isEdit ? hiredPeople : people), [isEdit, hiredPeople, people]);
 
   useEffect(() => {
-    const addPerson = people.find((p) => p.login.uuid === personId.id);
-    setPerson(addPerson);
-  }, []);
+    const found = sourceList?.find((p) => p.login?.uuid === id);
+    setPerson(found || null);
+  }, [id, sourceList]);
 
   if (!person) return <p>Loading...</p>;
 
@@ -34,7 +38,12 @@ function PersonProfile({ people, hirePeople }) {
           </ul>
         </div>
       </div>
-      <HireForm person={person} hirePeople={hirePeople} />
+      <HireForm
+        mode={isEdit ? "edit" : "hire"}
+        person={person}
+        hirePeople={hirePeople}
+        updateHiredPerson={updateHiredPerson}
+      />
     </article>
   );
 }
